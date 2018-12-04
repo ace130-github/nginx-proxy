@@ -1,0 +1,36 @@
+version: '2'
+
+services: 
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:ro
+
+  whoami:
+    image: jwilder/whoami
+    environment:
+      - VIRTUAL_HOST=whoami.local
+      
+  portainer:
+    image: portainer/portainer
+    expose:
+      - "9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - VIRTUAL_HOST=portainer.local
+      - VIRTUAL_PORT=9000
+      
+  cherokee:
+    image: managedkaos/cherokee
+    expose:
+      - "80"
+      - "9090"
+    volumes:
+      - ./static/www:/var/www
+    environment:
+      - VIRTUAL_HOST=static.local
